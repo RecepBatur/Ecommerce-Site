@@ -1,0 +1,144 @@
+﻿@model E_Ticaret.Models.Product
+
+@{
+	ViewData["Title"] = "Create";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script>
+
+	function addImage(buttonNumber) {
+		var imageButton = document.getElementById("file-" + buttonNumber);
+		imageButton.click();
+	}
+	function changed(buttonId) {
+		var fileButton = document.getElementById(buttonId);
+		var imageNumber = buttonId.substring(5);
+		var productImage = document.getElementById("img-" + imageNumber);
+		var imageFile = fileButton.files[0];
+		productImage.src = URL.createObjectURL(imageFile);
+		var deleteButton = document.getElementById("delete-" + imageNumber);
+		deleteButton.style.display = "inline";
+		imageNumber++;
+
+		if (imageNumber < 5) {
+			var firstImage = document.getElementById("img-" + imageNumber);
+			firstImage.style.display = "inline";
+		}
+	}
+	function showFirstImage() {
+		var firstImage = document.getElementById("img-0");
+		firstImage.style.display = "inline";
+	}
+	function deleteImage(deleteId) {
+		var nextObject, currentObject, j, image3, parentDiv;
+
+		currentObject = document.getElementById("file-" + deleteId);
+		parentDiv = currentObject.parentElement;
+		parentDiv.removeChild(currentObject);
+
+		for (i = deleteId; i < 4; i++) {
+			j = i + 1;
+			currentObject = document.getElementById("img-" + i);
+			nextObject = document.getElementById("img-" + j);
+			currentObject.src = nextObject.src;
+			currentObject.style.display = nextObject.style.display;
+			currentObject = document.getElementById("delete-" + i);
+			nextObject = document.getElementById("delete-" + j);
+			currentObject.style.display = nextObject.style.display;
+			nextObject = document.getElementById("file-" + j);
+			nextObject.id = "file-" + i;
+		}
+		currentObject = document.getElementById("delete-4";
+		currentObject.style.display = "none";
+		currentObject = document.getElementById("img-4");
+		currentObject.src = "/Image/camera.jpg";
+		image3 = document.getElementById("img-3");
+		if (image3.src == "http://localhost:12803/Image/camera.jpg") {
+			currentObject.style.display = "none";
+		}
+		currentObject = document.createElement("input");
+		currentObject.type = "file";
+		currentObject.id = "file-4";
+		currentObject.name = "file-4";
+		currentObject.style.display = "none";
+		currentObject.onchange = function() { changed(this.id); };
+		parentDiv.appendChild(currentObject);
+
+
+		//var delImage = document.getElementById("img-" + deleteId);
+		//var deleteButton = document.getElementById("delete-" + deleteId);
+		//var deleteFile = document.getElementById("file-" + deleteId);
+		//for (i = 4 i > deleteId; i--) {
+		//	var lastImage = document.getElementById("delete-" + 4);
+		//          lastImage.src = "/Image/camera.jpg";
+		//}
+		//deleteFile.value = "";
+		//deleteButton.style.display = "none";
+		//delImage.style.display = "none";
+		//delImage.src = "/Image/camera.jpg";
+	}
+	$(document).ready(showFirstImage);
+
+</script>
+
+<h1>Create</h1>
+
+<h4>Product</h4>
+<hr />
+<div class="row">
+	<div class="col-md-4">
+		<form asp-action="Create" enctype="multipart/form-data">
+			<!--resim gelmesini sağlıyor.-->
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<input asp-for="SellerId" class="form-control" type="hidden" value="@ViewData["SellerId"]" />
+			<div class="form-group">
+				<label asp-for="ProductName" class="control-label"></label>
+				<input asp-for="ProductName" class="form-control" />
+				<span asp-validation-for="ProductName" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="ProductPrice" class="control-label"></label>
+				<input asp-for="ProductPrice" class="form-control" />
+				<span asp-validation-for="ProductPrice" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="Description" class="control-label"></label>
+				<input asp-for="Description" class="form-control" />
+				<span asp-validation-for="Description" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="CategoryId" class="control-label"></label>
+				<select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
+			</div>
+			<div class="form-group">
+				<label asp-for="BrandId" class="control-label"></label>
+				<select asp-for="BrandId" class="form-control" asp-items="ViewBag.BrandId"></select>
+			</div>
+			<div>
+				@for (int i = 0; i < 5; i++)
+				{
+					<img src="/Image/camera.jpg" onclick="addImage(@i)" id="img-@i" width="150" height="130" style="display:none;" />
+					<input type="button" value="Delete" onclick="deleteImage(@i)" id="delete-@i" style="display:none;" />
+					<input type="file" name="file-@i" id="file-@i" onchange="changed(this.id)" style="display:none;" />
+				}
+			</div>
+			@*<div class="form-group">
+			<label asp-for="Image" class="control-label"></label>
+			<input asp-for="Image" class="form-control" />
+			</div>*@
+			<div class="form-group">
+				<input type="submit" value="Create" class="btn btn-primary" />
+			</div>
+		</form>
+	</div>
+</div>
+
+<div>
+	<a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+	}

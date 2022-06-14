@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - E_Ticaret</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/E_Ticaret.styles.css" asp-append-version="true" />
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script>
+		function getCookie() {
+			let name = "cart=";
+			let decodedCookie = decodeURIComponent(document.cookie);
+            
+			let ca = decodedCookie.split(';');
+			for (let i = 0; i < ca.length; i++) {
+				let c = ca[i];
+				while (c.charAt(0) == ' ') {
+					c = c.substring(1);
+				}
+				if (c.indexOf(name) == 0) {
+					return c.substring(name.length, c.length);
+				}
+			}
+			return "";
+		}
+
+		function SetCartCount() {
+			let cartTotal = document.getElementById("cartCount");
+			let cartCookie = getCookie();
+
+			var cartItems = cartCookie.split(',');
+			var totalCount = 0;
+
+			if (cartCookie != "") {
+				for (let i = 0; i < cartItems.length; i++) {
+					let cartItem = cartItems[i];                  
+					let itemDetails = cartItem.split(':'); //[0] solu gösterir,[1] sağı gösterir           
+					totalCount = totalCount + parseInt(itemDetails[1]);	
+				}
+			}
+           
+			cartTotal.innerText = totalCount;
+		}
+		$(document).ready(SetCartCount);
+	</script>
+</head>
+<body>
+	<header>
+		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-secondary border-bottom box-shadow mb-3">
+			<div class="container-fluid">
+				<a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index">E-Ticaret</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+						aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+					<ul class="navbar-nav flex-grow-1">
+						<li class="nav-item">
+							<a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-white" asp-area="Admin" asp-controller="Home" asp-action="Login">Login</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-white" asp-area="Admin" asp-controller="Sellers" asp-action="Index">Sellers</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-white" asp-area="Admin" asp-controller="Categories" asp-action="Index">Categories</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-white" asp-area="Seller" asp-controller="Home" asp-action="Login">SellerLogin</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-white" asp-area="Admin" asp-controller="PaymentMethods" asp-action="Index">PaymentLogin</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-white" asp-area="Admin" asp-controller="ItemStatus" asp-action="Index">ItemLogin</a>
+						</li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li class="nav-item">
+							@{
+								
+								string? customerId = this.Context.Session.GetString("customer");
+								if (customerId == null)
+								{
+									<a href="/Customers/Login?currentUrl=@this.Url.PageLink()">Giriş Yap</a>
+								}
+								
+							}
+						</li>
+						<li class="nav-item">
+							<a id="iconCart" class="carticon" asp-area="" asp-controller="Cart" asp-action="Index">
+								<i id="carticon1" class='fas fa-shopping-cart' style='font-size:50px'><span id="cartCount"></span></i>
+
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</header>
+	<div class="container">
+		<div>
+			<a asp-action="Index" asp-controller="Cart">Sepet:<span id="cartCount"></span></a>
+		</div>
+		<main role="main" class="pb-3">
+			@RenderBody()
+		</main>
+	</div>
+
+	@*<footer class="border-top footer text-muted">
+		<div class="container">
+			&copy; 2022 - E_Ticaret - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+		</div>
+	</footer>*@
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
